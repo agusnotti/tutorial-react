@@ -1,0 +1,22 @@
+{
+    "tareas" : [
+        {
+            "titulo": "Final Ps. Desarrollo",
+            "responsable": "Agustina",
+            "descripcion": "empezar a praparar final",
+            "prioridad": "alta"
+        },
+        {
+            "titulo": "entrenar",
+            "responsable": "Agustin",
+            "descripcion": "entrenar arbitraje",
+            "prioridad": "media"
+        },
+        {
+            "titulo": "Pilates",
+            "responsable": "Gabriela",
+            "descripcion": "ir a pilates",
+            "prioridad": "alta"
+        }
+    ]
+}
