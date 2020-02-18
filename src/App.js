@@ -5,33 +5,53 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import FormularioTarea from "./componentes/FormularioTarea";
 import Header from "./componentes/Header";
 import Footer from "./componentes/Footer";
-import Tarea from "./componentes/Tarea";
 
-import { tareas } from "./tareas.json";
 
 export default class App extends Component {
   constructor() {
     super();
+    let tareas = [];
     this.state = {
       tareas: tareas
     };
+    this.obtenerTareas();
     this.agregarTarea = this.agregarTarea.bind(this);
     this.borrarTarea = this.borrarTarea.bind(this);
   }
 
-  agregarTarea(tarea){
-    this.setState({
-      tareas: [...this.state.tareas, tarea]
-    })
+  async obtenerTareas(){
+    let result = await fetch ("http://localhost:3000/tareas",{"method":"GET","headers":{"Content-Type":"application/json"}})
+    if(result.status === 200){
+      let tareasResult = await result.json();    
+      this.setState({
+        tareas: tareasResult    
+      });
+    }
   }
 
-  borrarTarea(id){
-    if (window.confirm('¿Esta seguro de eliminar la tarea?')){
+  async agregarTarea(tarea){
+    let result = await fetch ("http://localhost:3000/tareas",{"method":"POST","headers":{"Content-Type":"application/json"},"body":JSON.stringify(tarea)})
+
+    if(result.status === 201){
+      let tareaResult = await result.json();
       this.setState({
-        tareas: this.state.tareas.filter((e, i) => {
-          return i !== id
+        tareas: [...this.state.tareas, tareaResult]
+      }) 
+    }
+  }
+
+  async borrarTarea(id){
+    if (window.confirm('¿Esta seguro de eliminar la tarea?')){
+      let result = await fetch ("http://localhost:3000/tareas/"+ id,{"method":"DELETE","headers":{"Content-Type":"application/json"}});
+      
+      if(result.status === 200){
+        this.setState({
+          tareas: this.state.tareas.filter((e, i) => {
+            return e._id !== id
+          })
         })
-      })
+        
+      }
     }
   }
 
@@ -41,10 +61,12 @@ export default class App extends Component {
 
   render() {
     const tareas = this.state.tareas.map((tarea, i) => {
+      //console.log(tarea[i]);
+      
       return (
         //<Tarea tarea={tarea} idTarea={i} idTarea={i} borrarTarea={this.borrarTarea}/>
         // Revisar error de key unique en componente hijo
-        <div className="col-md-4" key={i}>
+        <div className="col-md-4" key={tarea._id}>
             <div className="card mt-4 text-center">
               <div className="card-header">
                 <h5>{tarea.titulo}</h5>
@@ -57,8 +79,8 @@ export default class App extends Component {
                 <p>{tarea.responsable}</p>
               </div>
               <div className="card-footer">
-                <button className="btn btn-danger" onClick={this.borrarTarea.bind(this, i)}>Borrar</button>
-                <button className="btn btn-info m-1" onChange={this.tareaHecha.bind(this, i)}>Hecha</button> {/*falta funcionalidad*/}
+                <button className="btn btn-danger" onClick={this.borrarTarea.bind(this, tarea._id)}>Borrar</button>
+                {/*<button className="btn btn-info m-1" onChange={this.tareaHecha.bind(this, tarea._id)}>Hecha</button> falta funcionalidad*/}
               </div>
             </div>
           </div>
